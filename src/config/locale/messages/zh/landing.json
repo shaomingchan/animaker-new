@@ -51,6 +51,18 @@
               "icon": "RiVideoLine"
             },
             {
+              "title": "创建视频",
+              "description": "创建新的 AI 舞蹈视频",
+              "url": "/create",
+              "icon": "RiVideoLine"
+            },
+            {
+              "title": "我的视频",
+              "description": "查看你生成的视频",
+              "url": "/dashboard",
+              "icon": "Video"
+            },
+            {
               "title": "AI 聊天机器人",
               "description": "与 AI 聊天机器人对话",
               "url": "/chat",

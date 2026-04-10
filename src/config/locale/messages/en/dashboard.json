@@ -1,0 +1,19 @@
+{
+  "newVideo": "New Video",
+  "paymentSuccess": "Payment successful! Credits added.",
+  "creditsRemaining": "Credits Remaining",
+  "buyCredits": "Buy Credits",
+  "currentPlan": "Current Plan",
+  "totalVideos": "Total Videos",
+  "yourVideos": "Your Videos",
+  "createNew": "Create New",
+  "noVideos": "No videos yet",
+  "createFirst": "Create your first video",
+  "status": {
+    "queued": "Queued",
+    "uploading": "Uploading",
+    "running": "Processing",
+    "success": "Complete",
+    "failed": "Failed"
+  }
+}

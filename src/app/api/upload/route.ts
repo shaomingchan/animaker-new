@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuth } from '@/core/auth';
 import { getUploadPresignedUrl } from '@/shared/lib/r2';
 import { v4 as uuid } from 'uuid';
-import { getAuth } from '@/core/auth';
 
 export async function POST(req: NextRequest) {
   const auth = await getAuth();

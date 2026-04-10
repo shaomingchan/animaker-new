@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/config/db';
-import { user, videoTask } from '@/config/db/schema.postgres';
-import { sql, eq } from 'drizzle-orm';
+import { getAuth } from '@/core/auth';
+import { db } from '@/core/db';
+import { videoTask } from '@/config/db/schema';
 import { rhSubmitTask, rhUpload } from '@/shared/lib/runninghub';
 import { getPresignedUrl } from '@/shared/lib/r2';
+import { consumeCredits } from '@/shared/models/credit';
 import { v4 as uuid } from 'uuid';
 
 export async function POST(req: NextRequest) {
+  const auth = await getAuth();
   const session = await auth.api.getSession({
     headers: req.headers,
   });
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
   }
 
   const userId = session.user.id;
-  let creditDeducted = false;
+  let creditRecord: any = null;
 
   try {
     const body = await req.json();
@@ -34,21 +35,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Duration must be between 1 and 30 seconds' }, { status: 400 });
     }
 
-    // Deduct 1 credit from user
-    const creditDeductResult = await db.update(user)
-      .set({ credits: sql`${user.credits} - 1` })
-      .where(sql`${user.id} = ${userId} AND ${user.credits} > 0`)
-      .returning({ id: user.id });
+    const taskId = uuid();
 
-    if (!creditDeductResult || creditDeductResult.length === 0) {
+    // Consume 1 credit using ShipAny credit system
+    try {
+      creditRecord = await consumeCredits({
+        userId,
+        credits: 1,
+        scene: 'video_generation',
+        description: `Video generation task ${taskId}`,
+        metadata: JSON.stringify({
+          taskId,
+          resolution,
+          duration,
+          photoKey,
+          videoKey
+        }),
+      });
+    } catch (error) {
+      // Insufficient credits or other credit system error
       return NextResponse.json(
-        { error: 'No credits remaining. Please purchase credits first.' },
+        { error: error instanceof Error ? error.message : 'Insufficient credits. Please purchase credits first.' },
         { status: 402 }
       );
     }
-    creditDeducted = true;
-
-    const taskId = uuid();
 
     const [photoUrl, videoUrl] = await Promise.all([
       getPresignedUrl(photoKey, 600),
@@ -86,7 +96,7 @@ export async function POST(req: NextRequest) {
       duration,
     });
 
-    await db.insert(videoTask).values({
+    await db().insert(videoTask).values({
       id: taskId,
       userId: userId,
       status: 'running',
@@ -98,22 +108,20 @@ export async function POST(req: NextRequest) {
       resolution,
       duration,
       fps: 30,
+      creditId: creditRecord.id, // Link to credit transaction
     });
 
-    creditDeducted = false;
     return NextResponse.json({
       taskId,
       rhTaskId: rhResult.taskId,
       status: rhResult.status,
     });
   } catch (error: unknown) {
-    // Rollback credit deduction on error
-    if (creditDeducted) {
-      await db.update(user)
-        .set({ credits: sql`${user.credits} + 1` })
-        .where(eq(user.id, userId));
-    }
     console.error('Task creation failed:', error);
+
+    // Note: Credit refund on error is handled by the task status route
+    // when the task is marked as failed. This prevents double-refunds.
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }

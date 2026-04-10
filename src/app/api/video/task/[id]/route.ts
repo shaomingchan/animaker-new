@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/config/db';
-import { videoTask, user } from '@/config/db/schema.postgres';
+import { getAuth } from '@/core/auth';
+import { db } from '@/core/db';
+import { videoTask, user } from '@/config/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { rhQueryTask, rhDownloadResult } from '@/shared/lib/runninghub';
 import { uploadToR2, getPresignedUrl } from '@/shared/lib/r2';
+import { grantCreditsForUser } from '@/shared/models/credit';
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await getAuth();
   const session = await auth.api.getSession({
     headers: req.headers,
   });
@@ -21,7 +23,7 @@ export async function GET(
   const userId = session.user.id;
   const { id: taskId } = await params;
 
-  const task = await db.query.videoTask.findFirst({
+  const task = await db().query.videoTask.findFirst({
     where: and(eq(videoTask.id, taskId), eq(videoTask.userId, userId)),
   });
 
@@ -46,6 +48,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await getAuth();
   const session = await auth.api.getSession({
     headers: req.headers,
   });
@@ -57,7 +60,7 @@ export async function POST(
   const userId = session.user.id;
   const { id: taskId } = await params;
 
-  const task = await db.query.videoTask.findFirst({
+  const task = await db().query.videoTask.findFirst({
     where: and(eq(videoTask.id, taskId), eq(videoTask.userId, userId)),
   });
 
@@ -88,7 +91,7 @@ export async function POST(
       const resultKey = `tasks/${taskId}/result.mp4`;
       await uploadToR2(resultKey, videoBuffer, 'video/mp4');
 
-      const updatedTask = await db.update(videoTask)
+      const updatedTask = await db().update(videoTask)
         .set({
           status: 'success',
           resultKey,
@@ -99,7 +102,7 @@ export async function POST(
         .returning({ id: videoTask.id });
 
       if (updatedTask.length === 0) {
-        const latestTask = await db.query.videoTask.findFirst({
+        const latestTask = await db().query.videoTask.findFirst({
           where: and(eq(videoTask.id, taskId), eq(videoTask.userId, userId)),
         });
 
@@ -119,7 +122,7 @@ export async function POST(
     }
 
     if (result.status === 'FAILED') {
-      const failedTask = await db.update(videoTask)
+      const failedTask = await db().update(videoTask)
         .set({
           status: 'failed',
           errorMessage: result.errorMessage || 'Generation failed',
@@ -128,11 +131,26 @@ export async function POST(
         .where(and(eq(videoTask.id, taskId), eq(videoTask.status, task.status)))
         .returning({ id: videoTask.id });
 
-      // Refund credit on failure
+      // Refund credit on failure using ShipAny credit system
       if (failedTask.length > 0) {
-        await db.update(user)
-          .set({ credits: sql`${user.credits} + 1` })
-          .where(eq(user.id, userId));
+        try {
+          // Get user info for credit refund
+          const userRecord = await db().query.user.findFirst({
+            where: eq(user.id, userId),
+          });
+
+          if (userRecord) {
+            await grantCreditsForUser({
+              user: { id: userRecord.id, email: userRecord.email },
+              credits: 1,
+              validDays: 30, // Refunded credits valid for 30 days
+              description: `Refund for failed video generation task ${taskId}`,
+            });
+          }
+        } catch (refundError) {
+          console.error('Credit refund failed:', refundError);
+          // Don't fail the request if refund fails - log it for manual processing
+        }
       }
 
       return NextResponse.json({

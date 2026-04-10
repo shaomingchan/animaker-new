@@ -1,0 +1,40 @@
+{
+  "title": "创建 AI 视频",
+  "subtitle": "上传照片和舞蹈视频，生成你的动画视频",
+  "credits": "积分",
+  "photo": {
+    "label": "上传照片",
+    "cta": "点击上传照片",
+    "hint": "JPG, PNG（最大 50MB）"
+  },
+  "video": {
+    "label": "上传舞蹈视频",
+    "cta": "点击上传视频",
+    "hint": "MP4, MOV（最大 200MB，30秒）"
+  },
+  "generate": "生成视频",
+  "buyCreditsToGenerate": "购买积分以生成",
+  "buyCreditsCta": "购买积分",
+  "noCredits": {
+    "title": "积分不足",
+    "description": "购买积分以生成视频"
+  },
+  "alerts": {
+    "imageFile": "请选择图片文件",
+    "imageTooLarge": "图片文件过大（最大 50MB）",
+    "videoFile": "请选择视频文件",
+    "videoTooLarge": "视频文件过大（最大 200MB）",
+    "videoTooLong": "视频过长（最长 30 秒）",
+    "missingFiles": "请同时上传照片和视频",
+    "signInRequired": "请先登录",
+    "checkoutUnavailable": "结账不可用",
+    "genericError": "发生错误",
+    "insufficientCredits": "积分不足。请购买积分以继续。"
+  },
+  "progress": {
+    "uploadingPhoto": "正在上传照片...",
+    "uploadingVideo": "正在上传视频...",
+    "startingGeneration": "正在启动生成...",
+    "processing": "处理中..."
+  }
+}

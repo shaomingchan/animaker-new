@@ -558,7 +558,7 @@ export const chatMessage = table(
 
 // Animaker Video Generation Task Table
 export const videoTask = table(
-  'video_task',
+  'tasks',
   {
     id: text('id').primaryKey(),
     userId: text('user_id')

@@ -1,0 +1,19 @@
+{
+  "newVideo": "新建视频",
+  "paymentSuccess": "支付成功！积分已添加。",
+  "creditsRemaining": "剩余积分",
+  "buyCredits": "购买积分",
+  "currentPlan": "当前套餐",
+  "totalVideos": "视频总数",
+  "yourVideos": "我的视频",
+  "createNew": "创建新视频",
+  "noVideos": "暂无视频",
+  "createFirst": "创建你的第一个视频",
+  "status": {
+    "queued": "排队中",
+    "uploading": "上传中",
+    "running": "处理中",
+    "success": "已完成",
+    "failed": "失败"
+  }
+}

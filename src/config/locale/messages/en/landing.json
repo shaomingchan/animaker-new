@@ -45,10 +45,16 @@
               "icon": "RiMusic2Line"
             },
             {
-              "title": "AI Video Generator",
-              "description": "Use AI to generate videos",
-              "url": "/ai-video-generator",
+              "title": "Create Video",
+              "description": "Create a new AI dance video",
+              "url": "/create",
               "icon": "RiVideoLine"
+            },
+            {
+              "title": "My Videos",
+              "description": "View your generated videos",
+              "url": "/dashboard",
+              "icon": "Video"
             },
             {
               "title": "AI Chatbot",

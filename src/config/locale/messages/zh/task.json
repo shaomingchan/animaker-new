@@ -1,0 +1,39 @@
+{
+  "title": "任务详情",
+  "dashboard": "仪表板",
+  "loading": "加载任务中...",
+  "notFound": "任务未找到",
+  "download": "下载视频",
+  "createAnother": "再创建一个",
+  "status": {
+    "queued": "排队中",
+    "uploading": "上传中",
+    "running": "生成中",
+    "success": "已完成",
+    "failed": "失败"
+  },
+  "processing": {
+    "title": "AI 正在施展魔法...",
+    "description": "通常需要 10-15 分钟",
+    "estimatedTime": "预计完成时间：约 15 分钟",
+    "autoRefresh": "每 2 分钟自动刷新..."
+  },
+  "share": {
+    "title": "看看这个 AI 动画视频！",
+    "text": "使用 Animaker.AI 制作 — 让任何照片跳舞！",
+    "button": "分享",
+    "copied": "链接已复制！"
+  },
+  "failed": {
+    "title": "生成失败",
+    "message": "发生意外错误。你的积分已退还。",
+    "tryAgain": "重试 →"
+  },
+  "details": {
+    "title": "详情",
+    "resolution": "分辨率",
+    "duration": "时长",
+    "created": "创建时间",
+    "completed": "完成时间"
+  }
+}

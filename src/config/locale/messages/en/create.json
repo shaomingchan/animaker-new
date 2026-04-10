@@ -1,0 +1,40 @@
+{
+  "title": "Create AI Video",
+  "subtitle": "Upload a photo and dance video to generate your animated video",
+  "credits": "credits",
+  "photo": {
+    "label": "Upload Photo",
+    "cta": "Click to upload photo",
+    "hint": "JPG, PNG (max 50MB)"
+  },
+  "video": {
+    "label": "Upload Dance Video",
+    "cta": "Click to upload video",
+    "hint": "MP4, MOV (max 200MB, 30s)"
+  },
+  "generate": "Generate Video",
+  "buyCreditsToGenerate": "Buy Credits to Generate",
+  "buyCreditsCta": "Buy Credits",
+  "noCredits": {
+    "title": "No credits remaining",
+    "description": "Purchase credits to generate videos"
+  },
+  "alerts": {
+    "imageFile": "Please select an image file",
+    "imageTooLarge": "Image file is too large (max 50MB)",
+    "videoFile": "Please select a video file",
+    "videoTooLarge": "Video file is too large (max 200MB)",
+    "videoTooLong": "Video is too long (max 30 seconds)",
+    "missingFiles": "Please upload both photo and video",
+    "signInRequired": "Please sign in to continue",
+    "checkoutUnavailable": "Checkout unavailable",
+    "genericError": "An error occurred",
+    "insufficientCredits": "Insufficient credits. Please purchase credits to continue."
+  },
+  "progress": {
+    "uploadingPhoto": "Uploading photo...",
+    "uploadingVideo": "Uploading video...",
+    "startingGeneration": "Starting generation...",
+    "processing": "Processing..."
+  }
+}

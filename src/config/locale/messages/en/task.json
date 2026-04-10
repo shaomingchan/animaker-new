@@ -1,0 +1,39 @@
+{
+  "title": "Task Details",
+  "dashboard": "Dashboard",
+  "loading": "Loading task...",
+  "notFound": "Task not found",
+  "download": "Download Video",
+  "createAnother": "Create Another",
+  "status": {
+    "queued": "In Queue",
+    "uploading": "Uploading",
+    "running": "Generating",
+    "success": "Complete",
+    "failed": "Failed"
+  },
+  "processing": {
+    "title": "AI is working its magic...",
+    "description": "This usually takes 10-15 minutes",
+    "estimatedTime": "Estimated completion: ~15 minutes",
+    "autoRefresh": "Auto-refreshing every 2 minutes..."
+  },
+  "share": {
+    "title": "Check out this AI-animated video!",
+    "text": "Made with Animaker.AI — turn any photo into a dancing video!",
+    "button": "Share",
+    "copied": "Link copied!"
+  },
+  "failed": {
+    "title": "Generation Failed",
+    "message": "An unexpected error occurred. Your credit has been refunded.",
+    "tryAgain": "Try Again →"
+  },
+  "details": {
+    "title": "Details",
+    "resolution": "Resolution",
+    "duration": "Duration",
+    "created": "Created",
+    "completed": "Completed"
+  }
+}

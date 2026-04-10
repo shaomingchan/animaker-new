@@ -5,10 +5,12 @@
   --card-foreground: oklch(0.2795 0.0368 260.031);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2795 0.0368 260.031);
-  --primary: oklch(0.55 0.21 277);
+  /* Primary: purple-600 - matches tailwind purple-600 in oklch */
+  --primary: oklch(0.546 0.246 290.3);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.9276 0.0058 264.5313);
-  --secondary-foreground: oklch(0.3729 0.0306 259.7328);
+  /* Secondary: blue-600 - matches tailwind blue-600 in oklch */
+  --secondary: oklch(0.556 0.206 259.8);
+  --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.967 0.0029 264.5419);
   --muted-foreground: oklch(0.551 0.0234 264.3637);
   --accent: oklch(0.9299 0.0334 272.7879);
@@ -17,20 +19,20 @@
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.8717 0.0093 258.3382);
   --input: oklch(0.8717 0.0093 258.3382);
-  --ring: oklch(0.5854 0.2041 277.1173);
-  --chart-1: oklch(0.5854 0.2041 277.1173);
-  --chart-2: oklch(0.5106 0.2301 276.9656);
-  --chart-3: oklch(0.4568 0.2146 277.0229);
-  --chart-4: oklch(0.3984 0.1773 277.3662);
-  --chart-5: oklch(0.3588 0.1354 278.6973);
+  --ring: oklch(0.546 0.246 290.3);
+  --chart-1: oklch(0.546 0.246 290.3); /* purple-600 */
+  --chart-2: oklch(0.556 0.206 259.8); /* blue-600 */
+  --chart-3: oklch(0.486 0.226 286.3);
+  --chart-4: oklch(0.486 0.196 256.8);
+  --chart-5: oklch(0.426 0.206 282.3);
   --sidebar: oklch(0.967 0.0029 264.5419);
   --sidebar-foreground: oklch(0.2795 0.0368 260.031);
-  --sidebar-primary: oklch(0.5854 0.2041 277.1173);
+  --sidebar-primary: oklch(0.546 0.246 290.3);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.9299 0.0334 272.7879);
   --sidebar-accent-foreground: oklch(0.3729 0.0306 259.7328);
   --sidebar-border: oklch(0.8717 0.0093 258.3382);
-  --sidebar-ring: oklch(0.5854 0.2041 277.1173);
+  --sidebar-ring: oklch(0.546 0.246 290.3);
   --font-sans: Noto Sans Mono, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Merriweather, serif;
   --font-mono: JetBrains Mono, monospace;
@@ -65,10 +67,12 @@
   --card-foreground: oklch(0.9288 0.0126 255.5078);
   --popover: oklch(0.2795 0.0368 260.031);
   --popover-foreground: oklch(0.9288 0.0126 255.5078);
-  --primary: oklch(0.6801 0.1583 276.9349);
+  /* Primary: purple-600 for dark mode */
+  --primary: oklch(0.646 0.226 290.3);
   --primary-foreground: oklch(0.2077 0.0398 265.7549);
-  --secondary: oklch(0.3351 0.0331 260.912);
-  --secondary-foreground: oklch(0.8717 0.0093 258.3382);
+  /* Secondary: blue-600 for dark mode */
+  --secondary: oklch(0.656 0.186 259.8);
+  --secondary-foreground: oklch(0.2077 0.0398 265.7549);
   --muted: oklch(0.2395 0.0368 260.031);
   --muted-foreground: oklch(0.7137 0.0192 261.3246);
   --accent: oklch(0.3729 0.0306 259.7328);
@@ -77,20 +81,20 @@
   --destructive-foreground: oklch(0.2077 0.0398 265.7549);
   --border: oklch(0.4461 0.0263 256.8018);
   --input: oklch(0.4461 0.0263 256.8018);
-  --ring: oklch(0.6801 0.1583 276.9349);
-  --chart-1: oklch(0.6801 0.1583 276.9349);
-  --chart-2: oklch(0.5854 0.2041 277.1173);
-  --chart-3: oklch(0.5106 0.2301 276.9656);
-  --chart-4: oklch(0.4568 0.2146 277.0229);
-  --chart-5: oklch(0.3984 0.1773 277.3662);
+  --ring: oklch(0.646 0.226 290.3);
+  --chart-1: oklch(0.646 0.226 290.3); /* purple-600 */
+  --chart-2: oklch(0.656 0.186 259.8); /* blue-600 */
+  --chart-3: oklch(0.576 0.206 286.3);
+  --chart-4: oklch(0.576 0.176 256.8);
+  --chart-5: oklch(0.506 0.186 282.3);
   --sidebar: oklch(0.2795 0.0368 260.031);
   --sidebar-foreground: oklch(0.9288 0.0126 255.5078);
-  --sidebar-primary: oklch(0.6801 0.1583 276.9349);
+  --sidebar-primary: oklch(0.646 0.226 290.3);
   --sidebar-primary-foreground: oklch(0.2077 0.0398 265.7549);
   --sidebar-accent: oklch(0.3729 0.0306 259.7328);
   --sidebar-accent-foreground: oklch(0.8717 0.0093 258.3382);
   --sidebar-border: oklch(0.4461 0.0263 256.8018);
-  --sidebar-ring: oklch(0.6801 0.1583 276.9349);
+  --sidebar-ring: oklch(0.646 0.226 290.3);
   --font-sans: Noto Sans Mono, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Merriweather, serif;
   --font-mono: JetBrains Mono, monospace;
