@@ -555,3 +555,40 @@ export const chatMessage = table(
     index('idx_chat_message_user_id').on(table.userId, table.status),
   ]
 );
+
+// Animaker Video Generation Task Table
+export const videoTask = table(
+  'video_task',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    status: text('status').notNull(), // queued, uploading, running, success, failed
+    imageKey: text('image_key'), // R2 storage key for uploaded image
+    videoKey: text('video_key'), // R2 storage key for uploaded video
+    resultKey: text('result_key'), // R2 storage key for generated result
+    rhTaskId: text('rh_task_id'), // RunningHub task ID
+    rhImageFile: text('rh_image_file'), // RunningHub image file name
+    rhVideoFile: text('rh_video_file'), // RunningHub video file name
+    resolution: integer('resolution').notNull().default(540), // video resolution
+    duration: integer('duration').notNull().default(5), // video duration in seconds
+    fps: integer('fps').notNull().default(30), // frames per second
+    rhCoinsCost: integer('rh_coins_cost'), // RunningHub coins cost
+    errorMessage: text('error_message'), // error message if failed
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    completedAt: timestamp('completed_at'), // task completion time
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    // Composite: Query user's video tasks by status (most common)
+    // Can also be used for: WHERE userId = ? (left-prefix)
+    index('idx_video_task_user_status').on(table.userId, table.status),
+    // Order tasks by creation time for listing
+    index('idx_video_task_created_at').on(table.createdAt),
+    // Query by RunningHub task ID for status updates
+    index('idx_video_task_rh_task_id').on(table.rhTaskId),
+  ]
+);
