@@ -143,13 +143,27 @@ export function SignUp({
             router.push(callbackUrl);
           },
           onError: (e: any) => {
-            toast.error(e?.error?.message || 'sign up failed');
+            console.error('sign up error:', e);
+            const message =
+              e?.error?.message ||
+              e?.message ||
+              e?.response?.error ||
+              e?.response?.message ||
+              'Sign up failed';
+            toast.error(String(message));
             setLoading(false);
           },
         }
       );
     } catch (e: any) {
-      toast.error(e?.message || 'sign up failed');
+      console.error('sign up exception:', e);
+      const message =
+        e?.error?.message ||
+        e?.message ||
+        e?.response?.error ||
+        e?.response?.message ||
+        'Sign up failed';
+      toast.error(String(message));
       setLoading(false);
     }
   };

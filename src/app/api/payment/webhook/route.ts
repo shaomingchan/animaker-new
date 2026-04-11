@@ -63,35 +63,21 @@ export const POST = Webhook({
     }
 
     const orderId = getUuid();
-    const orderNo = `CREEM-${providerOrderId}`;
 
-    // Create order record
+    // Create order record (simplified structure matching old Animaker)
     try {
       const insertedOrder = await db().insert(order).values({
         id: orderId,
-        orderNo,
         userId,
-        userEmail: userRecord.email,
-        status: 'paid',
+        provider: 'creem',
+        providerOrderId: providerOrderId,
+        plan: productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE ? 'single' : '10pack',
+        credits: creditPackage.credits,
         amount: data.order?.amount || creditPackage.amount,
         currency: (data.order?.currency?.toUpperCase() === 'CNY' ? 'CNY' : 'USD'),
-        productId: productId,
-        paymentType: 'one_time',
-        paymentProvider: 'creem',
-        paymentSessionId: data.id,
-        checkoutInfo: JSON.stringify(data),
-        paymentResult: JSON.stringify(data.order),
-        paymentEmail: data.customer?.email || userRecord.email,
-        paymentAmount: data.order?.amount || creditPackage.amount,
-        paymentCurrency: data.order?.currency || 'USD',
+        status: 'paid',
         paidAt: new Date(),
-        creditsAmount: creditPackage.credits,
-        creditsValidDays: creditPackage.validDays,
-        productName: creditPackage.name,
-        transactionId: providerOrderId,
-      }).onConflictDoNothing({
-        target: order.orderNo,
-      }).returning({ id: order.id });
+      }).onConflictDoNothing().returning({ id: order.id });
 
       if (insertedOrder.length === 0) {
         console.log(`[Creem Webhook] Duplicate checkout.completed ignored: order=${providerOrderId}`);
@@ -103,17 +89,17 @@ export const POST = Webhook({
         user: { id: userRecord.id, email: userRecord.email },
         credits: creditPackage.credits,
         validDays: creditPackage.validDays,
-        description: `Purchase: ${creditPackage.name} (Order: ${orderNo})`,
+        description: `Purchase: ${creditPackage.name} (Order: ${orderId})`,
       });
 
-      console.log(`[Creem Webhook] checkout.completed: user=${userId}, +${creditPackage.credits} credits (valid ${creditPackage.validDays} days), order=${orderNo}`);
+      console.log(`[Creem Webhook] checkout.completed: user=${userId}, +${creditPackage.credits} credits (valid ${creditPackage.validDays} days), order=${orderId}`);
     } catch (error) {
       console.error(`[Creem Webhook] Failed to process payment:`, error);
       // Try to mark order as failed if it was created
       try {
         await db().update(order)
           .set({ status: 'failed' })
-          .where(eq(order.orderNo, orderNo));
+          .where(eq(order.id, orderId));
       } catch (updateError) {
         console.error(`[Creem Webhook] Failed to update order status:`, updateError);
       }

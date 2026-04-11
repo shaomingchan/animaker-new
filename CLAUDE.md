@@ -1,113 +1,216 @@
-# Animaker AI - Project Documentation
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-Animaker AI is an AI-powered video generation platform built on the ShipAny template. Users can upload photos and optional reference videos to generate AI-animated videos using the RunningHub API.
+**Animaker AI** - AI-powered video generation SaaS built on ShipAny Template Two. Users upload a photo and reference video to generate animated videos using RunningHub's AI API. The project uses a credit-based payment system with Creem.io integration.
 
 **Tech Stack:**
-- Next.js 15 (App Router)
+- Next.js 15 (App Router, Turbopack)
 - Better Auth (authentication)
 - Drizzle ORM + Neon PostgreSQL
-- Cloudflare R2 (object storage)
+- Cloudflare R2 (file storage)
 - RunningHub API (AI video generation)
 - Creem.io (payment processing)
-- Tailwind CSS + shadcn/ui
+- next-intl (i18n: English/Chinese)
 
 ## Development Commands
 
 ```bash
-# Install dependencies
-pnpm install
+# Development
+npm run dev                    # Start dev server with Turbopack
 
-# Run development server
-pnpm dev
+# Database
+npm run db:generate            # Generate Drizzle migrations
+npm run db:migrate             # Run migrations
+npm run db:push                # Push schema changes directly (dev only)
+npm run db:studio              # Open Drizzle Studio
 
-# Build for production
-pnpm build
+# Auth
+npm run auth:generate          # Generate Better Auth types
 
-# Database operations
-pnpm db:generate  # Generate migrations
-pnpm db:migrate   # Run migrations
-pnpm db:studio    # Open Drizzle Studio
+# Build & Deploy
+npm run build                  # Production build
+npm run build:fast             # Build with increased memory
+npm run start                  # Start production server
+
+# Code Quality
+npm run lint                   # Run ESLint
+npm run format                 # Format with Prettier
+npm run format:check           # Check formatting
 ```
 
-## Architecture
+## Critical Architecture Patterns
 
-### Authentication Flow
-1. User signs in via Better Auth (Google OAuth, Email, etc.)
-2. Session stored in database (sessions table)
-3. Protected routes check session via middleware
-4. Client-side: use `useSession()` from @/core/auth/client
-5. Server-side: use `auth()` from @/core/auth/server
+### 1. Credit System (ShipAny Advanced)
 
-### Video Generation Flow
-1. **Upload Phase:**
-   - Client requests presigned URLs from `/api/video/upload`
-   - Client uploads files directly to Cloudflare R2
-   - Returns R2 object keys
+**NEVER directly modify user credits.** Always use the credit transaction system:
 
-2. **Task Creation:**
-   - Client calls `/api/video/task/create` with R2 keys and parameters
-   - Server deducts credits from user account
-   - Server downloads files from R2
-   - Server uploads to RunningHub API
-   - Server submits AI generation task
-   - Returns task ID
+```typescript
+// Consuming credits (e.g., video generation)
+import { consumeCredits } from '@/shared/models/credit';
 
-3. **Status Polling:**
-   - Client polls `/api/video/task/[id]` every 5 seconds
-   - Server checks RunningHub task status
-   - When complete, server downloads result and uploads to R2
-   - Returns result URL to client
+const creditRecord = await consumeCredits({
+  userId,
+  credits: 1,
+  scene: 'video_generation',
+  description: 'Generate video task',
+  metadata: JSON.stringify({ taskId, resolution, duration }),
+});
+```
 
-### Database Schema
+```typescript
+// Granting credits (e.g., refunds, purchases)
+import { grantCreditsForUser } from '@/shared/models/credit';
 
-**Core Tables:**
-- `user` - User accounts (includes credits, plan)
-- `session` - Active sessions
-- `account` - OAuth accounts
-- `video_task` - Video generation tasks
+await grantCreditsForUser({
+  user: { id: userId, email: userEmail },
+  credits: 10,
+  validDays: 90,
+  description: 'Purchase 10-Pack',
+});
+```
 
-**Video Task Fields:**
-- `id` - UUID primary key
-- `userId` - Foreign key to user
-- `status` - pending | running | success | failed
-- `photoKey` - R2 object key for photo
-- `videoKey` - R2 object key for reference video (optional)
-- `resultKey` - R2 object key for generated video
-- `resultUrl` - Public URL for result
-- `resolution` - 480p | 720p | 1080p
-- `duration` - 5 | 10 | 15 seconds
-- `runninghubTaskId` - External task ID
-- `errorMessage` - Error details if failed
-- `createdAt` - Timestamp
-- `completedAt` - Timestamp
+**Key behaviors:**
+- Credits have expiration dates (`validDays` parameter)
+- Consumption uses FIFO (oldest credits first)
+- Each transaction creates a `credit` table record with `transactionNo`
+- Failed operations should refund credits with `grantCreditsForUser()`
 
-**Other Tables:**
+### 2. Database Schema Naming Convention
+
+**Critical:** Better Auth expects snake_case column names, but Drizzle schema uses camelCase TypeScript properties:
+
+```typescript
+// In schema.postgres.ts
+export const user = table('user', {
+  emailVerified: boolean('email_verified'),  // TS: camelCase, DB: snake_case
+  createdAt: timestamp('created_at'),
+});
+```
+
+**Always specify the database column name** as the first argument to Drizzle column functions. This mismatch has caused authentication bugs in the past.
+
+### 3. Authentication (Better Auth)
+
+**Session validation pattern:**
+```typescript
+import { getAuth } from '@/core/auth';
+
+const auth = await getAuth();
+const session = await auth.api.getSession({ headers: req.headers });
+
+if (!session?.user?.id) {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
+```
+
+**Configuration is dynamic** - loaded from `config` table at runtime:
+- `email_auth_enabled` - Enable/disable email/password auth
+- `email_verification_enabled` - Require email verification
+- `google_auth_enabled` - Enable Google OAuth
+
+Run `init-auth-config.mjs` to initialize default auth settings.
+
+### 4. Video Generation Flow
+
+The complete flow spans multiple API routes and external services:
+
+```
+1. User uploads → /api/video/upload (returns R2 presigned URLs)
+2. Client uploads files to R2 directly
+3. Client calls /api/video/task/create with R2 keys
+   ├─ Consume 1 credit (consumeCredits)
+   ├─ Download files from R2
+   ├─ Upload to RunningHub (rhUpload)
+   ├─ Submit task (rhSubmitTask)
+   └─ Store task in videoTask table
+4. Client polls /api/video/task/[id] every 2 minutes
+   ├─ Query RunningHub status (rhQueryTask)
+   ├─ If complete: download result, upload to R2
+   └─ If failed: refund credit (grantCreditsForUser)
+5. Return final R2 URL to client
+```
+
+**Important timing:**
+- Polling interval: 2 minutes (120 seconds) - optimized for ~15 min generation time
+- Do NOT reduce to 10 seconds - wastes resources
+- R2 presigned URLs expire in 10 minutes (600s)
+
+### 5. Payment Integration (Creem.io)
+
+Two credit packages configured in `.env`:
+- **Single:** 1 credit, $1.99, 30 days validity
+- **10-Pack:** 10 credits, $9.99, 90 days validity
+
+**Checkout flow:**
+```typescript
+// /api/payment/creem/checkout
+POST with { package: 'single' | '10pack' }
+→ Creates Creem checkout session
+→ Redirects to Creem payment page
+```
+
+**Webhook flow:**
+```typescript
+// /api/payment/webhook
+POST from Creem with checkout.completed event
+→ Verify webhook signature (CREEM_WEBHOOK_SECRET)
+→ Grant credits (grantCreditsForUser)
+→ Create order record for audit trail
+→ Use onConflictDoNothing to prevent duplicate processing
+```
+
+## Database Tables
+
+**Core ShipAny tables:**
+- `user`, `session`, `account`, `verification` - Better Auth
+- `credit` - Credit transactions with expiration tracking
 - `order` - Payment records
-- `subscription` - User subscriptions
-- `credit_transaction` - Credit history
-- `post` - Blog posts
-- `taxonomy` - Categories/tags
+- `config` - Runtime configuration
 
-### External Services
+**Animaker-specific tables:**
+- `video_task` - Video generation tasks
+  - Links to `credit` table via `creditId`
+  - Stores RunningHub `taskId` and status
+  - Stores R2 keys for input/output files
 
-**Cloudflare R2:**
-- Bucket: `animaker-ai`
-- Public URL: `https://pub-xxx.r2.dev`
-- Operations: upload, download, presigned URLs
-- Library: `src/shared/lib/r2.ts`
+### 6. File Storage (Cloudflare R2)
 
-**RunningHub API:**
-- Base URL: `https://api.runninghub.ai`
-- Operations: upload files, submit task, check status, download result
-- Library: `src/shared/lib/runninghub.ts`
-- Requires: API key in `RUNNINGHUB_API_KEY`
+Located in `src/shared/lib/r2.ts`:
 
-**Creem.io:**
-- Payment processing
-- Webhook: `/api/payment/webhook`
-- Credit packages: 10, 50, 100 credits
+```typescript
+// Upload file directly
+await uploadToR2(key, buffer, contentType);
+
+// Get presigned URL for client upload
+await getUploadPresignedUrl(key, contentType, expiresIn);
+
+// Get presigned URL for download
+await getPresignedUrl(key, expiresIn);
+
+// Get public URL (if bucket is public)
+getPublicUrl(key);
+```
+
+**Key naming convention:** `{userId}/{uuid}.{ext}`
+
+### 7. Internationalization (next-intl)
+
+Translation files: `src/config/locale/messages/{locale}/{namespace}.json`
+
+```typescript
+// In Server Components
+import { getTranslations } from 'next-intl/server';
+const t = await getTranslations('namespace');
+
+// In Client Components
+import { useTranslations } from 'next-intl';
+const t = useTranslations('namespace');
+```
+
+**Supported locales:** `en`, `zh`
 
 ## Key Routes
 
@@ -129,187 +232,82 @@ pnpm db:studio    # Open Drizzle Studio
 
 ## Environment Variables
 
-```env
-# Database
-DATABASE_URL=postgresql://...
+Required variables in `.env`:
 
-# Better Auth
-BETTER_AUTH_SECRET=...
-BETTER_AUTH_URL=http://localhost:3000
-
-# Google OAuth
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
+```bash
+# Core
+DATABASE_URL                          # Neon PostgreSQL connection string
+AUTH_SECRET                           # openssl rand -base64 32
+NEXT_PUBLIC_APP_URL                   # http://localhost:3000
+NEXT_PUBLIC_APP_NAME                  # Animaker AI
 
 # Cloudflare R2
-R2_ACCOUNT_ID=...
-R2_ACCESS_KEY_ID=...
-R2_SECRET_ACCESS_KEY=...
-R2_BUCKET_NAME=animaker-ai
-R2_PUBLIC_URL=https://pub-xxx.r2.dev
+R2_ACCOUNT_ID
+R2_ACCESS_KEY_ID
+R2_SECRET_ACCESS_KEY
+R2_BUCKET_NAME                        # animaker-ai
+R2_PUBLIC_URL                         # https://pub-xxx.r2.dev
 
 # RunningHub API
-RUNNINGHUB_API_KEY=...
-RUNNINGHUB_BASE_URL=https://api.runninghub.ai
+RUNNINGHUB_API_KEY
+RUNNINGHUB_WEBAPP_ID                  # 1982768582520119298
 
 # Creem Payment
-CREEM_API_KEY=...
-CREEM_WEBHOOK_SECRET=...
-
-# Proxy (for development in China)
-HTTP_PROXY=http://127.0.0.1:7890
-HTTPS_PROXY=http://127.0.0.1:7890
+CREEM_API_KEY
+CREEM_WEBHOOK_SECRET
+NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE   # Product ID for 1 credit
+NEXT_PUBLIC_CREEM_PRODUCT_ID_10PACK   # Product ID for 10 credits
 ```
 
-## Common Patterns
+## Common Issues & Solutions
 
-### Checking Authentication (Client)
-```tsx
-'use client';
-import { useSession } from '@/core/auth/client';
+### Issue: "column email_verified does not exist"
+**Cause:** Database column is `email_verified` but Drizzle schema had wrong mapping.
+**Solution:** Ensure schema uses `boolean('email_verified')` not `boolean('emailVerified')`.
 
-export default function MyPage() {
-  const { data: session, isPending } = useSession();
-  
-  if (isPending) return <div>Loading...</div>;
-  if (!session) redirect('/sign-in');
-  
-  return <div>Hello {session.user.name}</div>;
-}
-```
+### Issue: Registration fails silently
+**Cause:** Missing auth config in `config` table.
+**Solution:** Run `node init-auth-config.mjs` to initialize defaults.
 
-### Checking Authentication (Server)
-```tsx
-import { auth } from '@/core/auth/server';
-import { redirect } from 'next/navigation';
+### Issue: Credit consumption fails
+**Cause:** Trying to consume more credits than available, or credits expired.
+**Solution:** Check user's active credits with `getUserCredits()`. Handle 402 error on frontend.
 
-export default async function MyPage() {
-  const session = await auth();
-  
-  if (!session?.user) {
-    redirect('/sign-in');
-  }
-  
-  return <div>Hello {session.user.name}</div>;
-}
-```
+### Issue: Webhook called multiple times
+**Cause:** Creem retries failed webhooks.
+**Solution:** Use `onConflictDoNothing()` when inserting order records.
 
-### Deducting Credits
-```tsx
-import { db } from '@/core/db';
-import { user } from '@/config/db/schema.postgres';
-import { eq } from 'drizzle-orm';
+## Testing Workflow
 
-// Check balance
-const [currentUser] = await db
-  .select()
-  .from(user)
-  .where(eq(user.id, userId));
+1. **Database setup:**
+   ```bash
+   npm run db:push
+   node init-auth-config.mjs
+   ```
 
-if (currentUser.credits < cost) {
-  throw new Error('Insufficient credits');
-}
+2. **Test auth:** Register → Login → Check session
 
-// Deduct credits
-await db
-  .update(user)
-  .set({ credits: currentUser.credits - cost })
-  .where(eq(user.id, userId));
-```
+3. **Test credits:** 
+   - Manually grant credits via Drizzle Studio
+   - Or complete a test payment
 
-### Uploading to R2
-```tsx
-import { uploadToR2, getPresignedUrl } from '@/shared/lib/r2';
+4. **Test video generation:**
+   - Upload photo + video
+   - Submit task (consumes 1 credit)
+   - Poll status every 2 minutes
+   - Verify result URL
 
-// Direct upload
-await uploadToR2(key, buffer, contentType);
-
-// Presigned URL (for client upload)
-const url = await getPresignedUrl(key, contentType);
-```
-
-### Calling RunningHub API
-```tsx
-import { 
-  uploadFileToRunningHub, 
-  submitTask, 
-  getTaskStatus,
-  downloadResult 
-} from '@/shared/lib/runninghub';
-
-// Upload files
-const photoUrl = await uploadFileToRunningHub(photoBuffer, 'photo.jpg');
-const videoUrl = await uploadFileToRunningHub(videoBuffer, 'video.mp4');
-
-// Submit task
-const taskId = await submitTask({
-  photoUrl,
-  videoUrl,
-  resolution: '720p',
-  duration: 5
-});
-
-// Check status
-const status = await getTaskStatus(taskId);
-
-// Download result
-const resultBuffer = await downloadResult(status.resultUrl);
-```
-
-## Debugging
-
-### Enable Debug Logs
-```env
-DEBUG=true
-NODE_ENV=development
-```
-
-### Check Database
-```bash
-pnpm db:studio
-```
-
-### Check R2 Storage
-- Use Cloudflare dashboard
-- Or use R2 API directly
-
-### Check RunningHub Tasks
-- Check task status via API
-- Review error messages in database
-
-## Credit System
-
-**Credit Costs:**
-- 480p, 5s: 1 credit
-- 720p, 5s: 2 credits
-- 1080p, 5s: 3 credits
-- +1 credit per additional 5 seconds
-
-**Credit Packages:**
-- Starter: 10 credits - $9.99
-- Pro: 50 credits - $39.99
-- Business: 100 credits - $69.99
+5. **Test payment:**
+   - Use Creem test mode
+   - Complete checkout
+   - Verify webhook received
+   - Check credits granted
 
 ## Migration Notes
 
-This project was migrated from a standalone Next.js app to the ShipAny template:
+This project was migrated from an older Animaker codebase to ShipAny Template Two:
+- Old project used direct SQL for credits → Now uses ShipAny credit system
+- Old project used 10-second polling → Now uses 2-minute polling
+- Old project had different API paths (`/api/task/*`) → Now uses `/api/video/task/*`
 
-**Preserved from Original:**
-- Video generation logic (R2 + RunningHub)
-- Credit system
-- Creem payment integration
-- Purple-blue gradient theme
-
-**New from ShipAny:**
-- Better Auth (replaced NextAuth)
-- Blog system
-- Advanced user management
-- RBAC system
-- Multi-language support (next-intl)
-- Enhanced UI components
-
-**Key Differences:**
-- Auth: `useSession()` from Better Auth (not NextAuth)
-- i18n: `useTranslations()` from next-intl (not custom hook)
-- Database: Drizzle ORM with extended schema
-- Layout: ShipAny's app router structure
+See `MIGRATION_SUMMARY.md` for detailed migration history.

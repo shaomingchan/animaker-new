@@ -1,16 +1,85 @@
 {
-  "header": {
-    "id": "header",
-    "brand": {
-      "title": "ShipAny Two",
-      "logo": {
-        "src": "/logo.png",
-        "alt": "ShipAny Two",
-        "width": 100,
-        "height": 100
-      },
-      "url": "/"
+  "nav": {
+    "pricing": "Pricing",
+    "examples": "Examples",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "badge": "✨ AI-Powered Dance Videos",
+    "title": "Turn Your Photos Into",
+    "titleHighlight": "Dancing Videos",
+    "description": "Upload a photo and watch it come to life with AI-generated dance moves. Create stunning videos in minutes.",
+    "tryNow": "Try Now - Free",
+    "seeExamples": "See Examples"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "step1": {
+      "title": "Upload Photo",
+      "desc": "Choose any portrait photo you want to animate"
     },
+    "step2": {
+      "title": "AI Processing",
+      "desc": "Our AI analyzes and generates natural dance movements"
+    },
+    "step3": {
+      "title": "Download Video",
+      "desc": "Get your high-quality dancing video in minutes"
+    }
+  },
+  "examples": {
+    "title": "See the Magic",
+    "subtitle": "Hover to see before & after",
+    "hover": "Hover to see video"
+  },
+  "pricing": {
+    "title": "Simple Pricing",
+    "subtitle": "Pay per video, no subscription needed",
+    "single": {
+      "name": "Single Credit",
+      "price": "$1.99",
+      "desc": "Perfect for trying it out"
+    },
+    "pack": {
+      "name": "10-Pack",
+      "price": "$9.99",
+      "save": "Save 50%",
+      "desc": "Best value for multiple videos",
+      "badge": "Most Popular"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "q": "How long does it take to generate a video?",
+        "a": "Most videos are ready in 10-15 minutes. You'll receive an email when it's done."
+      },
+      {
+        "q": "What photo works best?",
+        "a": "Clear, front-facing portraits work best. The person should be clearly visible from head to waist."
+      },
+      {
+        "q": "Can I use the videos commercially?",
+        "a": "Yes! All generated videos are yours to use however you like, including commercial purposes."
+      },
+      {
+        "q": "What if I'm not satisfied with the result?",
+        "a": "If the generation fails or you're not happy with the result, we'll refund your credit automatically."
+      },
+      {
+        "q": "Do credits expire?",
+        "a": "Single credits expire after 30 days, 10-pack credits expire after 60 days from purchase."
+      }
+    ]
+  },
+  "footer": {
+    "copyright": "© 2024 animaker.dev. All rights reserved.",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "contact": "Contact"
+  }
+}
     "nav": {
       "items": [
         {

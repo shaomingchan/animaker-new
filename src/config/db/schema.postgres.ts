@@ -185,69 +185,28 @@ export const post = table(
 );
 
 export const order = table(
-  'order',
+  'orders',
   {
     id: text('id').primaryKey(),
-    orderNo: text('order_no').unique().notNull(),
     userId: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
-    userEmail: text('user_email'), // checkout user email
-    status: text('status').notNull(), // created, paid, failed
-    amount: integer('amount').notNull(), // checkout amount in cents
-    currency: text('currency').notNull(), // checkout currency
-    productId: text('product_id'),
-    paymentType: text('payment_type'), // one_time, subscription
-    paymentInterval: text('payment_interval'), // day, week, month, year
-    paymentProvider: text('payment_provider').notNull(),
-    paymentSessionId: text('payment_session_id'),
-    checkoutInfo: text('checkout_info').notNull(), // checkout request info
-    checkoutResult: text('checkout_result'), // checkout result
-    paymentResult: text('payment_result'), // payment result
-    discountCode: text('discount_code'), // discount code
-    discountAmount: integer('discount_amount'), // discount amount in cents
-    discountCurrency: text('discount_currency'), // discount currency
-    paymentEmail: text('payment_email'), // actual payment email
-    paymentAmount: integer('payment_amount'), // actual payment amount
-    paymentCurrency: text('payment_currency'), // actual payment currency
-    paidAt: timestamp('paid_at'), // paid at
+    provider: text('provider').notNull(), // creem, stripe, paypal
+    providerOrderId: text('provider_order_id'), // provider's order ID
+    plan: text('plan'), // single, 10pack (for reference)
+    credits: integer('credits').notNull(), // credits amount purchased
+    amount: integer('amount').notNull(), // amount in cents
+    currency: text('currency').notNull(), // USD, EUR, etc.
+    status: text('status').notNull().default('pending'), // pending, paid, failed
     createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-    deletedAt: timestamp('deleted_at'),
-    description: text('description'), // order description
-    productName: text('product_name'), // product name
-    subscriptionId: text('subscription_id'), // provider subscription id
-    subscriptionResult: text('subscription_result'), // provider subscription result
-    checkoutUrl: text('checkout_url'), // checkout url
-    callbackUrl: text('callback_url'), // callback url, after handle callback
-    creditsAmount: integer('credits_amount'), // credits amount
-    creditsValidDays: integer('credits_valid_days'), // credits validity days
-    planName: text('plan_name'), // subscription plan name
-    paymentProductId: text('payment_product_id'), // payment product id
-    invoiceId: text('invoice_id'),
-    invoiceUrl: text('invoice_url'),
-    subscriptionNo: text('subscription_no'), // order subscription no
-    transactionId: text('transaction_id'), // payment transaction id
-    paymentUserName: text('payment_user_name'), // payment user name
-    paymentUserId: text('payment_user_id'), // payment user id
+    paidAt: timestamp('paid_at'), // when payment completed
   },
   (table) => [
-    // Composite: Query user orders by status (most common)
-    // Can also be used for: WHERE userId = ? (left-prefix)
-    index('idx_order_user_status_payment_type').on(
-      table.userId,
-      table.status,
-      table.paymentType
-    ),
-    // Composite: Prevent duplicate payments
-    // Can also be used for: WHERE transactionId = ? (left-prefix)
-    index('idx_order_transaction_provider').on(
-      table.transactionId,
-      table.paymentProvider
-    ),
-    // Order orders by creation time for listing
+    // Query user orders by status
+    index('idx_order_user_status').on(table.userId, table.status),
+    // Prevent duplicate payments by provider order ID
+    index('idx_order_provider_order').on(table.provider, table.providerOrderId),
+    // Order by creation time for listing
     index('idx_order_created_at').on(table.createdAt),
   ]
 );
