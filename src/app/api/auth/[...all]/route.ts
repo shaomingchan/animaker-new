@@ -7,7 +7,11 @@ import { enforceMinIntervalRateLimit } from '@/shared/lib/rate-limit';
 function maybeRateLimitGetSession(request: Request): Response | null {
   const url = new URL(request.url);
   // better-auth session endpoint is served under this catch-all route.
-  if (isCloudflareWorker || !url.pathname.endsWith('/api/auth/get-session')) {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    isCloudflareWorker ||
+    !url.pathname.endsWith('/api/auth/get-session')
+  ) {
     return null;
   }
 

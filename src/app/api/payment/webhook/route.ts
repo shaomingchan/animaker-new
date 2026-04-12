@@ -8,14 +8,14 @@ import { getUuid } from '@/shared/lib/hash';
 // Credit packages configuration - Simple model: Single or 10-pack
 const CREDIT_PACKAGES: Record<string, { credits: number; validDays: number; amount: number; name: string }> = {
   // Single credit - 1 video generation
-  [process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE || '']: {
+  [process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE || process.env.CREEM_PRODUCT_ID_SINGLE || '']: {
     credits: 1,
     validDays: 30,
     amount: 199, // $1.99 in cents
     name: 'Single Credit',
   },
   // 10-pack - 10 video generations
-  [process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_10PACK || '']: {
+  [process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_10PACK || process.env.CREEM_PRODUCT_ID_10PACK || '']: {
     credits: 10,
     validDays: 90,
     amount: 999, // $9.99 in cents
@@ -71,7 +71,12 @@ export const POST = Webhook({
         userId,
         provider: 'creem',
         providerOrderId: providerOrderId,
-        plan: productId === process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE ? 'single' : '10pack',
+        plan:
+          productId ===
+          (process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE ||
+            process.env.CREEM_PRODUCT_ID_SINGLE)
+            ? 'single'
+            : '10pack',
         credits: creditPackage.credits,
         amount: data.order?.amount || creditPackage.amount,
         currency: (data.order?.currency?.toUpperCase() === 'CNY' ? 'CNY' : 'USD'),

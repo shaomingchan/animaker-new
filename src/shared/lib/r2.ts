@@ -10,7 +10,8 @@ const s3 = new S3Client({
   },
 });
 
-const BUCKET = process.env.R2_BUCKET || 'make';
+const BUCKET =
+  process.env.R2_BUCKET_NAME || process.env.R2_BUCKET || 'make';
 
 export async function uploadToR2(key: string, body: Buffer | Uint8Array, contentType: string) {
   await s3.send(new PutObjectCommand({

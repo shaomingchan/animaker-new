@@ -5,46 +5,46 @@
     "getStarted": "开始使用"
   },
   "hero": {
-    "badge": "✨ AI 驱动的舞蹈视频",
-    "title": "将你的照片变成",
-    "titleHighlight": "舞蹈视频",
-    "description": "上传一张照片，看它通过 AI 生成的舞蹈动作活起来。几分钟内创建令人惊叹的视频。",
-    "tryNow": "免费试用",
+    "badge": "AI 驱动的视频生成",
+    "title": "让你的照片变成",
+    "titleHighlight": "动态视频",
+    "description": "上传一张人物照片和一个参考视频，几分钟内生成生动的 AI 动画视频。",
+    "tryNow": "立即体验",
     "seeExamples": "查看示例"
   },
   "howItWorks": {
     "title": "如何使用",
     "step1": {
-      "title": "上传照片",
-      "desc": "选择任何你想要动画化的肖像照片"
+      "title": "上传素材",
+      "desc": "选择一张清晰的人像照片和一个参考视频。"
     },
     "step2": {
       "title": "AI 处理",
-      "desc": "我们的 AI 分析并生成自然的舞蹈动作"
+      "desc": "系统会分析素材并生成自然的动态效果。"
     },
     "step3": {
-      "title": "下载视频",
-      "desc": "几分钟内获得高质量的舞蹈视频"
+      "title": "下载结果",
+      "desc": "任务完成后即可下载生成的视频。"
     }
   },
   "examples": {
-    "title": "见证魔法",
+    "title": "查看效果",
     "subtitle": "悬停查看前后对比",
-    "hover": "悬停查看视频"
+    "hover": "悬停预览视频"
   },
   "pricing": {
     "title": "简单定价",
-    "subtitle": "按视频付费，无需订阅",
+    "subtitle": "按次付费，无需订阅",
     "single": {
       "name": "单次积分",
       "price": "$1.99",
-      "desc": "适合尝试"
+      "desc": "适合首次体验"
     },
     "pack": {
-      "name": "10次套餐",
+      "name": "10 次套餐",
       "price": "$9.99",
-      "save": "省50%",
-      "desc": "多个视频的最佳选择",
+      "save": "立省 50%",
+      "desc": "适合批量生成视频",
       "badge": "最受欢迎"
     }
   },
@@ -52,24 +52,24 @@
     "title": "常见问题",
     "items": [
       {
-        "q": "生成视频需要多长时间？",
-        "a": "大多数视频在 10-15 分钟内准备好。完成后你会收到电子邮件通知。"
+        "q": "生成一个视频需要多久？",
+        "a": "大多数视频会在 10 到 15 分钟内完成。"
       },
       {
         "q": "什么样的照片效果最好？",
-        "a": "清晰的正面肖像效果最好。人物应该从头到腰清晰可见。"
+        "a": "清晰的人像照片效果最好，建议人物从头到腰清楚可见。"
       },
       {
-        "q": "我可以商业使用这些视频吗？",
-        "a": "可以！所有生成的视频都是你的，可以随意使用，包括商业用途。"
+        "q": "生成的视频可以商用吗？",
+        "a": "可以，生成的视频可用于个人和商业用途。"
       },
       {
-        "q": "如果我对结果不满意怎么办？",
-        "a": "如果生成失败或你对结果不满意，我们会自动退还你的积分。"
+        "q": "如果生成失败怎么办？",
+        "a": "如果任务失败，系统应自动退还相应积分。"
       },
       {
         "q": "积分会过期吗？",
-        "a": "单次积分在购买后 30 天过期，10次套餐积分在购买后 60 天过期。"
+        "a": "单次积分有效期为 30 天，10 次套餐有效期为 90 天。"
       }
     ]
   },
@@ -78,237 +78,5 @@
     "terms": "条款",
     "privacy": "隐私",
     "contact": "联系"
-  }
-}
-    "nav": {
-      "items": [
-        {
-          "title": "功能亮点",
-          "url": "/#features",
-          "icon": "Sparkles"
-        },
-        {
-          "title": "案例展示",
-          "url": "/showcases",
-          "icon": "Box"
-        },
-        {
-          "title": "价格",
-          "url": "/pricing",
-          "icon": "DollarSign"
-        },
-        {
-          "title": "AI",
-          "icon": "RiRobot2Line",
-          "children": [
-            {
-              "title": "AI 图片生成器",
-              "description": "使用 AI 生成图片",
-              "url": "/ai-image-generator",
-              "icon": "RiImage2Line"
-            },
-            {
-              "title": "AI 音乐生成器",
-              "description": "使用 AI 生成美妙的音乐",
-              "url": "/ai-music-generator",
-              "icon": "RiMusic2Line"
-            },
-            {
-              "title": "AI 视频生成器",
-              "description": "使用 AI 生成视频",
-              "url": "/ai-video-generator",
-              "icon": "RiVideoLine"
-            },
-            {
-              "title": "创建视频",
-              "description": "创建新的 AI 舞蹈视频",
-              "url": "/create",
-              "icon": "RiVideoLine"
-            },
-            {
-              "title": "我的视频",
-              "description": "查看你生成的视频",
-              "url": "/dashboard",
-              "icon": "Video"
-            },
-            {
-              "title": "AI 聊天机器人",
-              "description": "与 AI 聊天机器人对话",
-              "url": "/chat",
-              "icon": "RiMessage2Line"
-            }
-          ]
-        },
-        {
-          "title": "内容",
-          "icon": "FileText",
-          "children": [
-            {
-              "title": "博客",
-              "description": "阅读博客文章",
-              "url": "/blog",
-              "icon": "Newspaper"
-            },
-            {
-              "title": "更新日志",
-              "description": "阅读更新日志",
-              "url": "/updates",
-              "icon": "Clock"
-            },
-            {
-              "title": "文档",
-              "description": "阅读文档",
-              "url": "/docs",
-              "target": "_blank",
-              "icon": "BookOpenText"
-            }
-          ]
-        }
-      ]
-    },
-    "buttons": [],
-    "user_nav": {
-      "show_name": true,
-      "show_credits": true,
-      "show_sign_out": true,
-      "items": [
-        {
-          "title": "账单",
-          "url": "/settings/billing",
-          "icon": "CreditCard"
-        },
-        {
-          "title": "活动",
-          "url": "/activity",
-          "icon": "Activity"
-        }
-      ]
-    },
-    "show_sign": true,
-    "show_theme": true,
-    "show_locale": true,
-    "topbanner": {
-      "text": "此网站是 ShipAny 模板的演示站点，购买 ShipAny 模板，请访问 <a href='https://shipany.ai/zh/pricing' class='text-orange-300' target='_blank'>ShipAny 官网</a>"
-    }
-  },
-  "footer": {
-    "id": "footer",
-    "brand": {
-      "title": "ShipAny Two",
-      "description": "ShipAny 是专为 AI SaaS 创业项目打造的 NextJS 模板。丰富模板与组件，极速交付你的产品。",
-      "logo": {
-        "src": "/logo.png",
-        "alt": "ShipAny Two",
-        "width": 100,
-        "height": 100
-      },
-      "url": "/"
-    },
-    "nav": {
-      "items": [
-        {
-          "title": "关于我们",
-          "children": [
-            {
-              "title": "功能亮点",
-              "url": "/#features",
-              "target": "_self"
-            },
-            {
-              "title": "案例展示",
-              "url": "/showcases",
-              "target": "_self"
-            },
-            {
-              "title": "价格",
-              "url": "/pricing",
-              "target": "_self"
-            }
-          ]
-        },
-        {
-          "title": "资源",
-          "children": [
-            {
-              "title": "文档",
-              "url": "/docs",
-              "target": "_self"
-            },
-            {
-              "title": "博客",
-              "url": "/blog",
-              "target": "_self"
-            },
-            {
-              "title": "对话",
-              "url": "/chat",
-              "target": "_blank"
-            }
-          ]
-        },
-        {
-          "title": "合作伙伴",
-          "children": [
-            {
-              "title": "ShipAny",
-              "url": "https://shipany.ai",
-              "target": "_blank"
-            },
-            {
-              "title": "ThinkAny",
-              "url": "https://thinkany.ai",
-              "target": "_blank"
-            },
-            {
-              "title": "MCP.so",
-              "url": "https://mcp.so",
-              "target": "_blank"
-            }
-          ]
-        }
-      ]
-    },
-    "social": {
-      "items": [
-        {
-          "title": "X",
-          "icon": "RiTwitterXFill",
-          "url": "https://x.com/your-app-name",
-          "target": "_blank"
-        },
-        {
-          "title": "Github",
-          "icon": "Github",
-          "url": "https://github.com/your-app-name",
-          "target": "_blank"
-        },
-        {
-          "title": "Discord",
-          "icon": "RiDiscordFill",
-          "url": "https://discord.gg/your-app-name",
-          "target": "_blank"
-        },
-        {
-          "title": "邮箱",
-          "icon": "Mail",
-          "url": "mailto:support@your-domain.com",
-          "target": "_self"
-        }
-      ]
-    },
-    "agreement": {
-      "items": [
-        {
-          "title": "隐私政策",
-          "url": "/privacy-policy"
-        },
-        {
-          "title": "服务条款",
-          "url": "/terms-of-service"
-        }
-      ]
-    },
-    "show_theme": true,
-    "show_locale": true
   }
 }

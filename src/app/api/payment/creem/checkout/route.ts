@@ -32,6 +32,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const appUrl =
+    process.env.AUTH_URL ||
+    process.env.BETTER_AUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    request.nextUrl.origin;
+
   try {
     // Call Creem API to create checkout session
     const response = await fetch('https://api.creem.io/v1/checkouts', {
@@ -49,9 +55,7 @@ export async function GET(request: NextRequest) {
         metadata: {
           referenceId: session.user.id,
         },
-        success_url: process.env.BETTER_AUTH_URL
-          ? `${process.env.BETTER_AUTH_URL}/dashboard?payment=success`
-          : `${request.nextUrl.origin}/dashboard?payment=success`,
+        success_url: `${appUrl}/dashboard?payment=success`,
       }),
     });
 

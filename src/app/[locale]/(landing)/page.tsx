@@ -6,10 +6,14 @@ import Link from "next/link";
 import { useTranslations } from 'next-intl';
 
 const CREEM_SINGLE_PRODUCT_ID =
-  process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE || "prod_28agLy2oWWjgUOe6hHnHKD";
+  process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE ||
+  process.env.CREEM_PRODUCT_ID_SINGLE ||
+  "prod_28agLy2oWWjgUOe6hHnHKD";
 
 const CREEM_10PACK_PRODUCT_ID =
-  process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_10PACK || "prod_2g1c2h6Qn4x8b2XHQX3E4F";
+  process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_10PACK ||
+  process.env.CREEM_PRODUCT_ID_10PACK ||
+  "prod_2g1c2h6Qn4x8b2XHQX3E4F";
 
 export default function Home() {
   const t = useTranslations('landing');

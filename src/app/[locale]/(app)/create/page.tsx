@@ -118,8 +118,12 @@ export default function CreatePage() {
 
       // Map product type to Creem product ID
       const productIdMap = {
-        single: process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE,
-        "10pack": process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_10PACK,
+        single:
+          process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_SINGLE ||
+          process.env.CREEM_PRODUCT_ID_SINGLE,
+        "10pack":
+          process.env.NEXT_PUBLIC_CREEM_PRODUCT_ID_10PACK ||
+          process.env.CREEM_PRODUCT_ID_10PACK,
       };
 
       const productId = productIdMap[productType];
@@ -140,7 +144,7 @@ export default function CreatePage() {
   };
 
   const uploadFileToR2 = async (file: File, fileType: "photo" | "video") => {
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/api/video/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
