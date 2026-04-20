@@ -9,7 +9,7 @@ export default async function AppLayout({
 }) {
   const auth = await getAuth();
   const session = await auth.api.getSession({
-    headers: headers(),
+    headers: await headers(),
   });
 
   if (!session) {
