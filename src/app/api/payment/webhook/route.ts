@@ -91,7 +91,7 @@ export const POST = Webhook({
 
       // Grant credits using ShipAny credit system
       await grantCreditsForUser({
-        user: { id: userRecord.id, email: userRecord.email },
+        user: userRecord,
         credits: creditPackage.credits,
         validDays: creditPackage.validDays,
         description: `Purchase: ${creditPackage.name} (Order: ${orderId})`,
