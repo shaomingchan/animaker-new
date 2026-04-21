@@ -141,7 +141,7 @@ export async function POST(
 
           if (userRecord) {
             await grantCreditsForUser({
-              user: { id: userRecord.id, email: userRecord.email },
+              user: userRecord,
               credits: 1,
               validDays: 30, // Refunded credits valid for 30 days
               description: `Refund for failed video generation task ${taskId}`,
