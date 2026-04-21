@@ -40,7 +40,7 @@ export async function GET() {
     email: userRecord.email || 'No email',
     credits: remainingCredits,
     plan: 'free',
-    tasks: userTasks.map(task => ({
+    tasks: userTasks.map((task: typeof videoTask.$inferSelect) => ({
       id: task.id,
       status: task.status || 'queued',
       resolution: task.resolution ?? 540,
